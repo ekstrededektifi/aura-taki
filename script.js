@@ -13,9 +13,17 @@ const FALLBACK_PRODUCTS=[
 let SETTINGS={...FALLBACK_SETTINGS};let products=[...FALLBACK_PRODUCTS];
 const cfg=window.AURA_CONFIG||{};const cmsReady=cfg.url&&cfg.publishableKey&&!cfg.url.includes("YOUR_")&&!cfg.publishableKey.includes("YOUR_");let db=null;
 if(cmsReady&&window.supabase)db=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
+function escAttr(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function safeImg(v){
+ const x=String(v||"").trim();
+ if(!x)return "";
+ if(/^data:image\/(?:jpeg|jpg|png|webp|gif);base64,[A-Za-z0-9+/=\r\n]+$/i.test(x))return x;
+ if(/^https:\/\/[^\s"'<>]+$/i.test(x))return x;
+ return "";
+}
 const imageStyle=url=>{const x=String(url||"");if(!x)return "";if(/^data:image\/(jpeg|jpg|png|webp|gif);base64,/i.test(x)||/^https?:\/\//i.test(x))return `background-image:url("${x}")`;return ""};
 const waUrl=p=>{const n=(SETTINGS.whatsapp||"").replace(/\D/g,"");const text=p?`Merhaba, ${p.name} (${p.price}) hakkında bilgi almak istiyorum.`:"Merhaba, ürünleriniz hakkında bilgi almak istiyorum.";return n?`https://wa.me/${n}?text=${encodeURIComponent(text)}`:"#"};
-function productCard(p){const img=safeImg(p.image_url);return `<a class="product-card" href="urun-detay.html?id=${encodeURIComponent(p.id)}"><div class="product-image photo">${img?`<img src="${img}" alt="${p.name}" loading="lazy" decoding="async">`:""}</div><div class="product-info"><small>${p.category}</small><h3>${p.name}</h3><b>${p.price}</b></div></a>`;}
+function productCard(p){const img=safeImg(p.image_url);return `<a class="product-card" href="urun-detay.html?id=${encodeURIComponent(p.id)}"><div class="product-image photo">${img?`<img src="${escAttr(img)}" alt="${escAttr(p.name)}" loading="lazy" decoding="async">`:""}</div><div class="product-info"><small>${p.category}</small><h3>${p.name}</h3><b>${p.price}</b></div></a>`;}
 function addFooter(){const f=document.getElementById("footer-placeholder");if(!f)return;f.innerHTML=`<div class="site-footer"><div class="footer-grid"><div><a class="brand footer-brand" href="index.html">AURA <em>TAKI</em></a><p class="footer-text">Günlük anları özel kılan, zarif ve modern takılar.</p></div><div><span class="footer-title">Keşfedin</span><nav class="footer-links"><a href="urunler.html">Ürünler</a><a href="hakkimizda.html">Hakkımızda</a><a href="iletisim.html">İletişim</a></nav></div><div><span class="footer-title">Bizi takip edin</span><nav class="footer-links"><a class="instagram-link" target="_blank" rel="noopener">Instagram ↗</a><a class="wa-link">WhatsApp ile sipariş ↗</a></nav></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Aura Takı. Tüm hakları saklıdır.</span><span>Sevgiyle tasarlandı.</span></div></div>`;}
 function setupMenu(){const btn=document.querySelector(".menu-toggle"),nav=document.querySelector(".main-nav");if(btn&&nav)btn.addEventListener("click",()=>{const open=nav.classList.toggle("open");btn.setAttribute("aria-expanded",open);});}
 function setupLinks(){document.querySelectorAll(".wa-link").forEach(a=>{a.href=waUrl();a.target="_blank";a.rel="noopener";});document.querySelectorAll(".instagram-link").forEach(a=>{a.href=SETTINGS.instagram||"#";});}
