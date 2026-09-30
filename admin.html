@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aura Takı — Yönetim Paneli</title><link rel="stylesheet" href="admin.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>window.addEventListener("error",e=>{const m=document.getElementById("login-msg");if(m)m.textContent="Sayfa hatası: "+e.message;});window.addEventListener("unhandledrejection",e=>{const m=document.getElementById("login-msg");if(m)m.textContent="Bağlantı hatası: "+(e.reason?.message||e.reason||"Bilinmeyen hata");});</script>
 <script src="supabase-config.js"></script></head>
 <body>
 <div id="login" class="auth"><div class="auth-card"><div class="logo">AURA <i>TAKI</i></div><h1>Yönetim Paneli</h1><p>Siteyi buradan yönetebilirsiniz.</p><form id="login-form"><label>E-posta<input id="email" type="email" required autocomplete="username"></label><label>Şifre<input id="password" type="password" required autocomplete="current-password"></label><button>Giriş yap</button><p id="login-msg" class="msg"></p></form></div></div>
