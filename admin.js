@@ -1,13 +1,42 @@
-const cfg=window.AURA_CONFIG||{};const ready=cfg.url&&cfg.publishableKey&&!cfg.url.includes("YOUR_")&&!cfg.publishableKey.includes("YOUR_");let db=null,currentProducts=[];const $=id=>document.getElementById(id);function msg(id,t){$(id).textContent=t||""}
-if(ready)db=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
-function requireReady(){if(!ready){msg("login-msg","Önce supabase-config.js içine Supabase URL ve Publishable Key eklenmeli.");return false}return true}
-async function isAdmin(){if(!db)return false;const{data:{user}}=await db.auth.getUser();if(!user)return false;const{data,error}=await db.from("site_admins").select("user_id").eq("user_id",user.id).maybeSingle();return !!data&&!error}
-async function boot(){if(!requireReady())return;const ok=await isAdmin();$("login").hidden=ok;$("app").hidden=!ok;if(ok)await loadAll()}
-$("login-form").addEventListener("submit",async e=>{e.preventDefault();if(!requireReady())return;msg("login-msg","Giriş yapılıyor...");const{error}=await db.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error)msg("login-msg",error.message);else await boot()});
-$("logout").addEventListener("click",async()=>{await db.auth.signOut();location.reload()});
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active")});
-async function loadAll(){await loadProducts();await loadSettings()}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+const cfg=window.AURA_CONFIG||{};
+const ready=!!(cfg.url&&cfg.publishableKey&&!cfg.url.includes("YOUR_")&&!cfg.publishableKey.includes("YOUR_"));
+let db=null,currentProducts=[];
+const $=id=>document.getElementById(id);
+function msg(id,t){const el=$(id);if(el)el.textContent=t||"";}
+if(ready&&window.supabase)db=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
+
+async function isAdmin(){
+  if(!db)throw new Error("Supabase bağlantısı hazır değil.");
+  const {data:{user},error:userError}=await db.auth.getUser();
+  if(userError)throw userError;
+  if(!user)return false;
+  const {data,error}=await db.from("site_admins").select("user_id").eq("user_id",user.id).maybeSingle();
+  if(error)throw error;
+  return !!data;
+}
+async function boot(){
+  if(!ready||!db){msg("login-msg","Supabase bağlantısı bulunamadı.");return;}
+  msg("login-msg","Kontrol ediliyor...");
+  try{
+    const ok=await isAdmin();
+    $("login").hidden=ok;$("app").hidden=!ok;
+    if(ok)await loadAll();
+    else msg("login-msg","Bu hesap Aura Takı yöneticisi olarak tanımlı değil.");
+  }catch(e){console.error(e);msg("login-msg","Hata: "+(e.message||e));}
+}
+$("login-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  msg("login-msg","Giriş yapılıyor...");
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error){msg("login-msg","Giriş hatası: "+error.message);return;}
+    await boot();
+  }catch(e){console.error(e);msg("login-msg","Bağlantı hatası: "+(e.message||e));}
+});
+$("logout").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");});
+async function loadAll(){await loadProducts();await loadSettings();}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 async function loadProducts(){const{data,error}=await db.from("products").select("*").order("sort_order").order("created_at");if(error){alert(error.message);return}currentProducts=data||[];$("product-list").innerHTML=currentProducts.map(p=>`<article class="product-row"><div class="thumb" style="background-image:url('${p.image_url||""}')"></div><div><h3>${esc(p.name)}</h3><small>${esc(p.category)} · ${esc(p.price)} ${p.active?'<span class="badge">Yayında</span>':'<span class="badge">Gizli</span>'} ${p.featured?'<span class="badge">Öne çıkan</span>':''}</small></div><div class="actions"><button onclick="editProduct('${p.id}')">Düzenle</button><button class="danger" onclick="deleteProduct('${p.id}')">Sil</button></div></article>`).join("")||"<p>Henüz ürün yok.</p>";$("product-count").textContent=currentProducts.length;$("active-count").textContent=currentProducts.filter(p=>p.active).length;$("featured-count").textContent=currentProducts.filter(p=>p.featured).length}
 function openProduct(p={}){$("modal").hidden=false;$("modal-title").textContent=p.id?"Ürünü düzenle":"Yeni ürün";$("product-id").value=p.id||"";$("p-name").value=p.name||"";$("p-category").value=p.category||"Kolye";$("p-price").value=p.price||"";$("p-description").value=p.description||"";$("p-featured").checked=!!p.featured;$("p-active").checked=p.id?p.active!==false:true;$("current-image").textContent=p.image_url?"Mevcut fotoğraf yüklü. Yeni fotoğraf seçerseniz değişir.":""}
 window.editProduct=id=>openProduct(currentProducts.find(p=>p.id===id)||{});$("new-product").onclick=()=>openProduct();$("close-modal").onclick=()=>{$("modal").hidden=true};
