@@ -1,4 +1,4 @@
-const cfg=window.AURA_CONFIG||{};
+const cfg=window.AURA_CONFIG||{url:"https://bqzpwyormeqiymvndwtm.supabase.co",publishableKey:"sb_publishable_F1Q0gqxSjlBc_3xbo3NO_w_ZYPn4Gty"};
 const ready=!!(cfg.url&&cfg.publishableKey&&!cfg.url.includes("YOUR_")&&!cfg.publishableKey.includes("YOUR_"));
 let db=null,currentProducts=[];
 const $=id=>document.getElementById(id);
