@@ -1,5 +1,4 @@
 window.AURA_CONFIG = {
-  // Supabase Dashboard > Project Settings > API
-  url: "YOUR_SUPABASE_URL",
-  publishableKey: "YOUR_SUPABASE_PUBLISHABLE_KEY"
+  url: "https://bqzpwyormeqiymvndwtm.supabase.co",
+  publishableKey: "sb_publishable_F1Q0gqxSjlBc_3xbo3NO_w_ZYPn4Gty"
 };
