@@ -1,68 +1,27 @@
-// Aura Takı — iletişim ve görseller tek merkezden yönetilir.
-const WHATSAPP_NUMBER = "905555555555";
-const INSTAGRAM_URL = "https://instagram.com/aurataki";
-
-// Gerçek ürün fotoğraflarını burada değiştirin.
-const VISUALS = {
-  hero: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85",
-  about: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1000&q=85",
-  "product-1": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85",
-  "product-2": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=85",
-  "product-3": "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&w=900&q=85",
-  "product-4": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85"
-};
-
-const products = [
-  { id:"luna-kolye", name:"Luna İnci Kolye", category:"Kolye", price:"₺890", image:"product-1", featured:true, description:"Işığı nazikçe yansıtan inci detaylarıyla, her stile uyum sağlayan zamansız bir kolye." },
-  { id:"duru-bileklik", name:"Duru Zincir Bileklik", category:"Bileklik", price:"₺720", image:"product-2", featured:true, description:"Minimal çizgisi ve zarif dokusuyla gün boyu size eşlik edecek bileklik." },
-  { id:"soleil-kupe", name:"Soleil Halka Küpe", category:"Küpe", price:"₺640", image:"product-3", featured:true, description:"Sade ama etkileyici, hafif ve parlak halka küpe tasarımı." },
-  { id:"nova-yuzuk", name:"Nova Taşlı Yüzük", category:"Yüzük", price:"₺780", image:"product-4", featured:true, description:"Işıltılı taş detayıyla her anınıza zarafet katan ayarlanabilir yüzük." },
-  { id:"sera-set", name:"Sera Zarafet Seti", category:"Setler", price:"₺1.490", image:"product-1", featured:false, description:"Birbiriyle uyumlu kolye ve küpeden oluşan, hediye için de ideal set." },
-  { id:"mira-kolye", name:"Mira Zincir Kolye", category:"Kolye", price:"₺850", image:"product-2", featured:false, description:"Modern zincir formunun zamansız ve rafine yorumu." },
-  { id:"lina-kupe", name:"Lina Damla Küpe", category:"Küpe", price:"₺690", image:"product-4", featured:false, description:"Akışkan damla formuyla hafif ve göz alıcı bir tasarım." },
-  { id:"arya-yuzuk", name:"Arya İnce Yüzük", category:"Yüzük", price:"₺560", image:"product-3", featured:false, description:"Tek başına zarif, diğer yüzüklerle birlikte kusursuz görünen ince form." }
+// Aura Takı — public site + Supabase CMS bağlantısı
+const FALLBACK_SETTINGS={brand:"Aura Takı",whatsapp:"905555555555",instagram:"https://instagram.com/aurataki",phone:"",email:"",address:"",hero_image:"https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85",about_image:"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1000&q=85",story_title:"Sadelikte saklı bir zarafet.",story_text:"Her parçada özen, her detayda zarafet.",seo_description:"Aura Takı - zarif ve modern takı koleksiyonu."};
+const FALLBACK_PRODUCTS=[
+{id:"luna-kolye",name:"Luna İnci Kolye",category:"Kolye",price:"₺890",image_url:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85",featured:true,description:"Işığı nazikçe yansıtan inci detaylarıyla, her stile uyum sağlayan zamansız bir kolye."},
+{id:"duru-bileklik",name:"Duru Zincir Bileklik",category:"Bileklik",price:"₺720",image_url:"https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=85",featured:true,description:"Minimal çizgisi ve zarif dokusuyla gün boyu size eşlik edecek bileklik."},
+{id:"soleil-kupe",name:"Soleil Halka Küpe",category:"Küpe",price:"₺640",image_url:"https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&w=900&q=85",featured:true,description:"Sade ama etkileyici, hafif ve parlak halka küpe tasarımı."},
+{id:"nova-yuzuk",name:"Nova Taşlı Yüzük",category:"Yüzük",price:"₺780",image_url:"https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85",featured:true,description:"Işıltılı taş detayıyla her anınıza zarafet katan ayarlanabilir yüzük."},
+{id:"sera-set",name:"Sera Zarafet Seti",category:"Setler",price:"₺1.490",image_url:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85",featured:false,description:"Birbiriyle uyumlu kolye ve küpeden oluşan set."},
+{id:"mira-kolye",name:"Mira Zincir Kolye",category:"Kolye",price:"₺850",image_url:"https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=85",featured:false,description:"Modern zincir formunun zamansız yorumu."},
+{id:"lina-kupe",name:"Lina Damla Küpe",category:"Küpe",price:"₺690",image_url:"https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85",featured:false,description:"Akışkan damla formuyla hafif ve göz alıcı tasarım."},
+{id:"arya-yuzuk",name:"Arya İnce Yüzük",category:"Yüzük",price:"₺560",image_url:"https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&w=900&q=85",featured:false,description:"Tek başına zarif, diğer yüzüklerle birlikte kusursuz görünen ince form."}
 ];
-
-const imageStyle = key => VISUALS[key] ? `background-image:url("${VISUALS[key]}")` : "";
-function productCard(p) {
-  return `<a class="product-card" href="urun-detay.html?id=${p.id}">
-    <div class="product-image photo ${p.image}" style="${imageStyle(p.image)}" role="img" aria-label="${p.name} görseli"></div>
-    <div class="product-info"><small>${p.category}</small><h3>${p.name}</h3><b>${p.price}</b></div>
-  </a>`;
-}
-function whatsappLink(product) {
-  const msg=product?`Merhaba, ${product.name} (${product.price}) hakkında bilgi almak istiyorum.`:"Merhaba, ürünleriniz hakkında bilgi almak istiyorum.";
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-}
-function addFooter(){
-  const f=document.getElementById("footer-placeholder"); if(!f)return;
-  f.innerHTML=`<div class="site-footer"><div class="footer-grid"><div><a class="brand footer-brand" href="index.html">AURA <em>TAKI</em></a><p class="footer-text">Günlük anları özel kılan, zarif ve modern takılar.</p></div><div><span class="footer-title">Keşfedin</span><nav class="footer-links"><a href="urunler.html">Ürünler</a><a href="hakkimizda.html">Hakkımızda</a><a href="iletisim.html">İletişim</a></nav></div><div><span class="footer-title">Bizi takip edin</span><nav class="footer-links"><a class="instagram-link" target="_blank" rel="noopener" href="#">Instagram ↗</a><a class="wa-link" href="#">WhatsApp ile sipariş ↗</a></nav></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Aura Takı. Tüm hakları saklıdır.</span><span>Sevgiyle tasarlandı.</span></div></div>`;
-}
-function setupLinks(){
- document.querySelectorAll(".wa-link").forEach(a=>{a.href=whatsappLink();a.target="_blank";a.rel="noopener";});
- document.querySelectorAll(".instagram-link").forEach(a=>a.href=INSTAGRAM_URL);
-}
-function setupMenu(){
- const btn=document.querySelector(".menu-toggle"),nav=document.querySelector(".main-nav");
- if(btn&&nav)btn.addEventListener("click",()=>{const open=nav.classList.toggle("open");btn.setAttribute("aria-expanded",open);});
-}
-function setupVisuals(){
- const hero=document.querySelector(".hero");
- if(hero&&VISUALS.hero)hero.style.setProperty("--hero-image",`url("${VISUALS.hero}")`);
- const about=document.querySelector(".about-art");
- if(about&&VISUALS.about)about.style.backgroundImage=`url("${VISUALS.about}")`;
-}
-function renderHome(){const t=document.getElementById("featured-products");if(t)t.innerHTML=products.filter(p=>p.featured).map(productCard).join("");}
-function renderProducts(){
- const t=document.getElementById("all-products");if(!t)return;
- const params=new URLSearchParams(location.search);let category=params.get("category")||"Tümü";
- const draw=()=>{t.innerHTML=products.filter(p=>category==="Tümü"||p.category===category).map(productCard).join("")||"<p>Bu kategoride henüz ürün bulunmuyor.</p>";document.querySelectorAll(".filter-bar button").forEach(b=>b.classList.toggle("active",b.dataset.category===category));};
- document.querySelectorAll(".filter-bar button").forEach(b=>b.addEventListener("click",()=>{category=b.dataset.category;draw();}));draw();
-}
-function renderDetail(){
- const t=document.getElementById("product-detail");if(!t)return;
- const p=products.find(x=>x.id===new URLSearchParams(location.search).get("id"))||products[0];
- document.title=`${p.name} | Aura Takı`;
- t.innerHTML=`<div class="detail-image product-image photo ${p.image}" style="${imageStyle(p.image)}" role="img" aria-label="${p.name} görseli"></div><div class="detail-info"><p class="eyebrow">${p.category}</p><h1>${p.name}</h1><div class="price">${p.price}</div><p>${p.description}</p><ul><li>Özenle hazırlanan hediye paketi</li><li>WhatsApp üzerinden kişisel destek</li><li>Hızlı ve güvenli sipariş iletişimi</li></ul><a class="button wide-wa" target="_blank" rel="noopener" href="${whatsappLink(p)}">WhatsApp ile sipariş ver <span>→</span></a></div>`;
-}
-addFooter();setupLinks();setupMenu();setupVisuals();renderHome();renderProducts();renderDetail();
+let SETTINGS={...FALLBACK_SETTINGS};let products=[...FALLBACK_PRODUCTS];
+const cfg=window.AURA_CONFIG||{};const cmsReady=cfg.url&&cfg.publishableKey&&!cfg.url.includes("YOUR_")&&!cfg.publishableKey.includes("YOUR_");let db=null;
+if(cmsReady&&window.supabase)db=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
+const imageStyle=url=>url?`background-image:url("${url}")`:"";
+const waUrl=p=>{const n=(SETTINGS.whatsapp||"").replace(/\D/g,"");const text=p?`Merhaba, ${p.name} (${p.price}) hakkında bilgi almak istiyorum.`:"Merhaba, ürünleriniz hakkında bilgi almak istiyorum.";return n?`https://wa.me/${n}?text=${encodeURIComponent(text)}`:"#"};
+function productCard(p){return `<a class="product-card" href="urun-detay.html?id=${p.id}"><div class="product-image photo" style="${imageStyle(p.image_url)}" role="img" aria-label="${p.name} görseli"></div><div class="product-info"><small>${p.category}</small><h3>${p.name}</h3><b>${p.price}</b></div></a>`;}
+function addFooter(){const f=document.getElementById("footer-placeholder");if(!f)return;f.innerHTML=`<div class="site-footer"><div class="footer-grid"><div><a class="brand footer-brand" href="index.html">AURA <em>TAKI</em></a><p class="footer-text">Günlük anları özel kılan, zarif ve modern takılar.</p></div><div><span class="footer-title">Keşfedin</span><nav class="footer-links"><a href="urunler.html">Ürünler</a><a href="hakkimizda.html">Hakkımızda</a><a href="iletisim.html">İletişim</a></nav></div><div><span class="footer-title">Bizi takip edin</span><nav class="footer-links"><a class="instagram-link" target="_blank" rel="noopener">Instagram ↗</a><a class="wa-link">WhatsApp ile sipariş ↗</a></nav></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Aura Takı. Tüm hakları saklıdır.</span><span>Sevgiyle tasarlandı.</span></div></div>`;}
+function setupMenu(){const btn=document.querySelector(".menu-toggle"),nav=document.querySelector(".main-nav");if(btn&&nav)btn.addEventListener("click",()=>{const open=nav.classList.toggle("open");btn.setAttribute("aria-expanded",open);});}
+function setupLinks(){document.querySelectorAll(".wa-link").forEach(a=>{a.href=waUrl();a.target="_blank";a.rel="noopener";});document.querySelectorAll(".instagram-link").forEach(a=>{a.href=SETTINGS.instagram||"#";});const brand=document.querySelector(".brand");if(brand)brand.textContent=SETTINGS.brand||"AURA TAKI";}
+function applySettings(){const hero=document.querySelector(".hero");if(hero&&SETTINGS.hero_image)hero.style.setProperty("--hero-image",`url("${SETTINGS.hero_image}")`);const about=document.querySelector(".about-art");if(about&&SETTINGS.about_image)about.style.backgroundImage=`url("${SETTINGS.about_image}")`;const story=document.querySelector(".story-banner h2");if(story&&SETTINGS.story_title)story.innerHTML=SETTINGS.story_title.replace(/\n/g,"<br>");const desc=document.querySelector('meta[name="description"]');if(desc&&SETTINGS.seo_description)desc.content=SETTINGS.seo_description;const contact=document.querySelector("#contact-details");if(contact)contact.innerHTML=`<p><b>WhatsApp</b><br><a class="wa-link" href="#">${SETTINGS.whatsapp||"Bilgi yok"}</a></p><p><b>Telefon</b><br>${SETTINGS.phone||"Bilgi yok"}</p><p><b>E-posta</b><br><a href="mailto:${SETTINGS.email||""}">${SETTINGS.email||"Bilgi yok"}</a></p><p><b>Adres</b><br>${SETTINGS.address||"Bilgi yok"}</p><p><a class="instagram-link" target="_blank" rel="noopener" href="#">Instagram'da takip edin →</a></p>`;setupLinks();}
+function renderHome(){const t=document.getElementById("featured-products");if(t)t.innerHTML=products.filter(p=>p.featured&&p.active!==false).map(productCard).join("");}
+function renderProducts(){const t=document.getElementById("all-products");if(!t)return;const params=new URLSearchParams(location.search);let category=params.get("category")||"Tümü";const draw=()=>{t.innerHTML=products.filter(p=>p.active!==false&&(category==="Tümü"||p.category===category)).map(productCard).join("")||"<p>Bu kategoride henüz ürün bulunmuyor.</p>";document.querySelectorAll(".filter-bar button").forEach(b=>b.classList.toggle("active",b.dataset.category===category));};document.querySelectorAll(".filter-bar button").forEach(b=>b.addEventListener("click",()=>{category=b.dataset.category;draw();}));draw();}
+function renderDetail(){const t=document.getElementById("product-detail");if(!t)return;const p=products.find(x=>String(x.id)===new URLSearchParams(location.search).get("id"))||products.find(x=>x.active!==false)||products[0];if(!p)return;document.title=`${p.name} | Aura Takı`;t.innerHTML=`<div class="detail-image product-image photo" style="${imageStyle(p.image_url)}" role="img" aria-label="${p.name} görseli"></div><div class="detail-info"><p class="eyebrow">${p.category}</p><h1>${p.name}</h1><div class="price">${p.price}</div><p>${p.description}</p><ul><li>Özenle hazırlanan hediye paketi</li><li>WhatsApp üzerinden kişisel destek</li><li>Hızlı ve güvenli sipariş iletişimi</li></ul><a class="button wide-wa" target="_blank" rel="noopener" href="${waUrl(p)}">WhatsApp ile sipariş ver <span>→</span></a></div>`;}
+async function loadCms(){if(!db)return;try{const s=await db.from("site_settings").select("*").eq("id","main").maybeSingle();if(s.data)SETTINGS={...SETTINGS,...s.data};const p=await db.from("products").select("*").eq("active",true).order("sort_order").order("created_at");if(p.data&&p.data.length)products=p.data;}catch(e){console.warn("CMS verisi alınamadı; statik yedek kullanılıyor.",e);}}
+async function start(){await loadCms();addFooter();applySettings();setupMenu();renderHome();renderProducts();renderDetail();}start();
