@@ -7,8 +7,11 @@
 create table if not exists public.site_settings (
   id text primary key default 'main',
   brand text not null default 'Aura Takı',
+  logo_url text not null default '',
   whatsapp text not null default '',
   instagram text not null default '',
+  tiktok text not null default '',
+  facebook text not null default '',
   phone text not null default '',
   email text not null default '',
   address text not null default '',
@@ -38,8 +41,8 @@ create table if not exists public.site_admins (
   user_id uuid primary key references auth.users(id) on delete cascade
 );
 
-insert into public.site_settings (id, brand, whatsapp, instagram, story_title, story_text)
-values ('main','Aura Takı','','','Sadelikte saklı bir zarafet.','Her parçada özen, her detayda zarafet.')
+insert into public.site_settings (id, brand, whatsapp, instagram, tiktok, facebook, story_title, story_text)
+values ('main','Aura Takı','','','','','Sadelikte saklı bir zarafet.','Her parçada özen, her detayda zarafet.')
 on conflict (id) do nothing;
 
 insert into storage.buckets (id, name, public)
